@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Tracker - Weather & Climate Change Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e74c3c;
+            padding: 10px;
+            background: #fadbd8;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            padding: 10px;
+            background: #d5f4e6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .weather-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .weather-main {
+            flex: 1;
+        }
+
+        .weather-main h3 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .weather-main p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .weather-icon {
+            font-size: 4em;
+            text-align: center;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .air-quality {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .aqi-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .aqi-good { background: linear-gradient(135deg, #27ae60 0%, #229954 100%); }
+        .aqi-fair { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .aqi-moderate { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .aqi-poor { background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%); }
+        .aqi-very-poor { background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); }
+
+        .aqi-label {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .aqi-description {
+            color: #333;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .pollution-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .pollution-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .pollution-label {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .pollution-value {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .checklist-section {
+            grid-column: 1 / -1;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .checklist li:hover {
+            background: #e9ecef;
+            border-left-color: #667eea;
+        }
+
+        .checklist li.completed {
+            background: #d5f4e6;
+            border-left-color: #27ae60;
+        }
+
+        .checklist li.completed span {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checklist span {
+            flex: 1;
+            color: #333;
+            font-size: 1.05em;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .add-checklist {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-checklist input {
+            flex: 1;
+        }
+
+        .add-checklist button {
+            padding: 10px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.1em;
+            padding: 20px;
+        }
+
+        .location-name {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+
+            .pollution-details {
+                grid-template-columns: 1fr;
+            }
+
+            .aqi-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Climate Tracker</h1>
+            <p class="subtitle">Monitor weather and track climate changes in your location</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="locationInput" placeholder="Enter city name..." value="London">
+                <button onclick="searchLocation()">Search</button>
+            </div>
+            <div class="error" id="errorMessage"></div>
+            <div class="success" id="successMessage"></div>
+        </div>
+
+        <div class="main-content">
+            <!-- Weather Card -->
+            <div class="card">
+                <h2>🌤️ Current Weather</h2>
+                <div id="weatherContent" class="loading">Loading weather data...</div>
+            </div>
+
+            <!-- Air Quality Card -->
+            <div class="card">
+                <h2>💨 Air Quality</h2>
+                <div id="airQualityContent" class="loading">Loading air quality data...</div>
+            </div>
+
+            <!-- Climate Change Checklist -->
+            <div class="card checklist-section">
+                <h2>✅ Climate Action Checklist</h2>
+                <div class="add-checklist">
+                    <input type="text" id="checklistInput" placeholder="Add a climate action item...">
+                    <button onclick="addChecklistItem()">Add</button>
+                </div>
+                <ul class="checklist" id="checklistItems"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WEATHER_API_KEY = 'b6fd43532bfe4a07937193328241703'; // Using weatherapi.com free tier
+        const WEATHER_BASE_URL = 'https://api.weatherapi.com/v1';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChecklistFromStorage();
+            searchLocation();
+            
+            document.getElementById('locationInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchLocation();
+                }
+            });
+
+            document.getElementById('checklistInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addChecklistItem();
+                }
+            });
+        });
+
+        async function searchLocation() {
+            const location = document.getElementById('locationInput').value.trim();
+            if (!location) {
+                showError('Please enter a location');
+                return;
+            }
+
+            showLoading();
+            try {
+                // Get coordinates first
+                const geoResponse = await fetch(
+                    `${WEATHER_BASE_URL}/current.json?key=${WEATHER_API_KEY}&q=${location}&aqi=yes`
+                );
+
+                if (!geoResponse.ok) {
+                    throw new Error('Location not found');
+                }
+
+                const data = await geoResponse.json();
+                displayWeather(data);
+                displayAirQuality(data);
+                showSuccess(`Weather data loaded for ${data.location.name}, ${data.location.country}`);
+            } catch (error) {
+                showError('Error: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function displayWeather(data) {
+            const weather = data.current;
+            const location = data.location;
+            
+            const weatherHTML = `
+                <div class="location-name">${location.name}, ${location.region}</div>
+                <div class="weather-info">
+                    <div class="weather-main">
+                        <h3>${weather.temp_c}°C</h3>
+                        <p>${weather.condition.text}</p>
+                    </div>
+                    <div class="weather-icon">${getWeatherEmoji(weather.condition.code)}</div>
+                </div>
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Feels Like</div>
+                        <div class="detail-value">${weather.feelslike_c}°C</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Humidity</div>
+                        <div class="detail-value">${weather.humidity}%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Wind Speed</div>
+                        <div class="detail-value">${weather.wind_kph} km/h</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Pressure</div>
+                        <div class="detail-value">${weather.pressure_mb} mb</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">UV Index</div>
+                        <div class="detail-value">${weather.uv}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Visibility</div>
+                        <div class="detail-value">${weather.vis_km} km</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('weatherContent').innerHTML = weatherHTML;
+        }
+
+        function displayAirQuality(data) {
+            const aqi = data.current.air_quality;
+            
+            if (!aqi || !aqi.us_epa_index) {
+                document.getElementById('airQualityContent').innerHTML = '<p>Air quality data not available for this location</p>';
+                return;
+            }
+
+            const aqiIndex = aqi.us_epa_index;
+            const pm25 = aqi.pm2_5 ? aqi.pm2_5.toFixed(1) : 'N/A';
+            const pm10 = aqi.pm10 ? aqi.pm10.toFixed(1) : 'N/A';
+            const o3 = aqi.o3 ? aqi.o3.toFixed(2) : 'N/A';
+            const no2 = aqi.no2 ? aqi.no2.toFixed(2) : 'N/A';
+            const so2 = aqi.so2 ? aqi.so2.toFixed(2) : 'N/A';
+            const co = aqi.co ? aqi.co.toFixed(2) : 'N/A';
+
+            const { description, color } = getAQIDescription(aqiIndex);
+            
+            const airQualityHTML = `
+                <div class="air-quality">
+                    <div class="aqi-label">US EPA Index</div>
+                    <div class="aqi-circle ${color}">
+                        ${aqiIndex}
+                    </div>
+                    <div class="aqi-description">${description}</div>
+                </div>
+                <div class="pollution-details">
+                    <div class="pollution-item">
+                        <div class="pollution-label">PM2.5</div>
+                        <div class="pollution-value">${pm25} µg/m³</div>
+                    </div>
+                    <div class="pollution-item">
+                        <div class="pollution-label">PM10</div>
+                        <div class="pollution-value">${pm10} µg/m³</div>
+                    </div>
+                    <div class="pollution-item">
+                        <div class="pollution-label">Ozone (O₃)</div>
+                        <div class="pollution-value">${o3} ppb</div>
+                    </div>
+                    <div class="pollution-item">
+                        <div class="pollution-label">NO₂</div>
+                        <div class="pollution-value">${no2} ppb</div>
+                    </div>
+                    <div class="pollution-item">
+                        <div class="pollution-label">SO₂</div>
+                        <div class="pollution-value">${so2} ppb</div>
+                    </div>
+                    <div class="pollution-item">
+                        <div class="pollution-label">CO</div>
+                        <div class="pollution-value">${co} ppm</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('airQualityContent').innerHTML = airQualityHTML;
+        }
+
+        function getWeatherEmoji(code) {
+            // WeatherAPI condition codes
+            if (code === 1000) return '☀️'; // Sunny
+            if (code === 1003) return '⛅'; // Partly cloudy
+            if (code === 1006) return '☁️'; // Cloudy
+            if (code === 1009) return '☁️'; // Overcast
+            if (code === 1030 || code === 1135 || code === 1147) return '🌫️'; // Fog/Mist
+            if (code === 1063 || code === 1069 || code === 1072 || code === 1150 || code === 1153) return '🌦️'; // Drizzle
+            if (code === 1066 || code === 1114 || code === 1117 || code === 1210 || code === 1213 || code === 1216 || code === 1219 || code === 1222 || code === 1225) return '❄️'; // Snow
+            if (code === 1087 || code === 1273 || code === 1276 || code === 1279 || code === 1282) return '⛈️'; // Thunderstorm
+            if (code === 1180 || code === 1183 || code === 1186 || code === 1189 || code === 1192 || code === 1195 || code === 1198 || code === 1201 || code === 1204 || code === 1207) return '🌧️'; // Rain
+            return '🌤️';
+        }
+
+        function getAQIDescription(index) {
+            const descriptions = {
+                1: { text: 'Good', color: 'aqi-good' },
+                2: { text: 'Moderate', color: 'aqi-fair' },
+                3: { text: 'Unhealthy for Sensitive Groups', color: 'aqi-moderate' },
+                4: { text: 'Unhealthy', color: 'aqi-poor' },
+                5: { text: 'Very Unhealthy', color: 'aqi-very-poor' },
+                6: { text: 'Hazardous', color: 'aqi-very-poor' }
+            };
+            
+            const desc = descriptions[index] || { text: 'Unknown', color: 'aqi-fair' };
+            return {
+                description: desc.text,
+                color: desc.color
+            };
+        }
+
+        function addChecklistItem() {
+            const input = document.getElementById('checklistInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                showError('Please enter a checklist item');
+                return;
+            }
+
+            const items = JSON.parse(localStorage.getItem('climateChecklist') || '[]');
+            items.push({
+                id: Date.now(),
+                text: text,
+                completed: false
+            });
+            localStorage.setItem('climateChecklist', JSON.stringify(items));
+            input.value = '';
+            renderChecklist();
+            showSuccess('Item added to checklist!');
+        }
+
+        function toggleChecklistItem(id) {
+            const items = JSON.parse(localStorage.getItem('climateChecklist') || '[]');
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                localStorage.setItem('climateChecklist', JSON.stringify(items));
+                renderChecklist();
+            }
+        }
+
+        function deleteChecklistItem(id) {
+            const items = JSON.parse(localStorage.getItem('climateChecklist') || '[]');
+            const filtered = items.filter(i => i.id !== id);
+            localStorage.setItem('climateChecklist', JSON.stringify(filtered));
+            renderChecklist();
+        }
+
+        function renderChecklist() {
+            const items = JSON.parse(localStorage.getItem('climateChecklist') || '[]');
+            const container = document.getElementById('checklistItems');
+            
+            if (items.length === 0) {
+                container.innerHTML = '<li style="text-align: center; color: #999; padding: 20px;">No items yet. Add one to get started!</li>';
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <li class="${item.completed ? 'completed' : ''}">
+                    <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleChecklistItem(${item.id})">
+                    <span>${item.text}</span>
+                    <button class="delete-btn" onclick="deleteChecklistItem(${item.id})">Delete</button>
+                </li>
+            `).join('');
+        }
+
+        function loadChecklistFromStorage() {
+            renderChecklist();
+        }
+
+        function showLoading() {
+            document.getElementById('weatherContent').innerHTML = '<div class="loading">Loading weather data...</div>';
+            document.getElementById('airQualityContent').innerHTML = '<div class="loading">Loading air quality data...</div>';
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
